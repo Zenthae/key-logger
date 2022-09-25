@@ -1,0 +1,18 @@
+{
+  "files.exclude": {
+    "src-tauri\\target": false,
+    ".vscode": false,
+    "dist": false,
+    "node_modules": false,
+    ".gitignore": false,
+    "vite.config.ts": false,
+    "README.md": false,
+    "index.html": false,
+    "package.json": false,
+    "src-tauri\\.gitignore": false,
+    "src-tauri\\Cargo.toml": false,
+    "src-tauri\\tauri.conf.json": false,
+    "src-tauri\\icons": false
+  },
+  "workspace.isHidden": false
+}
