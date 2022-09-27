@@ -3,31 +3,23 @@
     windows_subsystem = "windows"
 )]
 
-use diesel::prelude::*;
-use diesel_migrations::embed_migrations;
-use std::sync::Mutex;
-
-#[macro_use]
-extern crate diesel;
-#[macro_use]
-extern crate diesel_migrations;
-embed_migrations!("./migrations/");
+use db::{establish_connection, run_migrations};
+// use diesel::prelude::*;
+// use std::sync::Mutex;
 
 pub mod db;
 pub mod schema;
 
 struct AppState {
-    database_connection: Mutex<SqliteConnection>,
+    // database_connection: Mutex<SqliteConnection>,
 }
 
 fn main() {
-    let c = db::establish_connection();
+    run_migrations(&mut establish_connection());
 
     let state = AppState {
-        database_connection: Mutex::new(db::establish_connection()),
+        // database_connection: Mutex::new(db::establish_connection()),
     };
-
-    diesel_migrations::run_pending_migrations(&c).expect("Error migrating database");
 
     tauri::Builder::default()
         .manage(state)
