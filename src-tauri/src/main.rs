@@ -8,7 +8,6 @@ use db::{establish_connection, run_migrations};
 // use std::sync::Mutex;
 
 pub mod db;
-pub mod schema;
 
 struct AppState {
     // database_connection: Mutex<SqliteConnection>,
