@@ -3,22 +3,16 @@
     windows_subsystem = "windows"
 )]
 
-use db::{establish_connection, run_migrations};
-// use diesel::prelude::*;
-// use std::sync::Mutex;
-
 pub mod db;
 
-struct AppState {
-    // database_connection: Mutex<SqliteConnection>,
-}
+use db::{establish_connection, run_migrations};
+
+struct AppState {}
 
 fn main() {
     run_migrations(&mut establish_connection());
 
-    let state = AppState {
-        // database_connection: Mutex::new(db::establish_connection()),
-    };
+    let state = AppState {};
 
     tauri::Builder::default()
         .manage(state)

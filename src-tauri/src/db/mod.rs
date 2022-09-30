@@ -1,9 +1,9 @@
 pub mod models;
 pub mod schema;
 
-use crate::db::models::NewEvent;
+use self::models::NewEvent;
 
-use diesel::prelude::*;
+use diesel::{connection::SimpleConnection, prelude::*};
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use dotenv::dotenv;
 use std::env;
@@ -35,4 +35,15 @@ pub fn register_event(conn: &mut SqliteConnection, event_time: &i32, key_name: &
         .values(&new_event)
         .execute(conn)
         .expect("Error saving new Event")
+}
+
+pub fn init(conn: &mut SqliteConnection) {
+    conn.batch_execute("
+            PRAGMA busy_timeout = 250;          -- sleep if the database is busy
+            PRAGMA journal_mode = WAL;          -- better write-concurrency
+            PRAGMA synchronous = NORMAL;        -- fsync only in critical moments
+            PRAGMA wal_autocheckpoint = 1000;   -- write WAL changes back every 1000 pages, for an in average 1MB WAL file. May affect readers if number is increased
+            PRAGMA wal_checkpoint(TRUNCATE);    -- free some space by truncating possibly massive WAL files from the last run.
+            PRAGMA foreign_keys = ON;           -- enforce foreign keys
+        ").expect("Failed to set PRAGMA values");
 }
