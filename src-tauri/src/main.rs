@@ -3,20 +3,27 @@
     windows_subsystem = "windows"
 )]
 
-pub mod db;
+use db::run_migrations;
 
-use db::{establish_connection, run_migrations};
+use crate::db::{models::NewEvent, query::create_event};
 
-struct AppState {}
+// #[macro_use]
+// extern crate diesel;
+// extern crate diesel_migrations;
+
+mod db;
+mod listener;
 
 fn main() {
-    run_migrations(&mut establish_connection());
+    let pool = db::get_connection_pool();
+    let conn = &mut pool.clone().get().unwrap();
 
-    let state = AppState {};
+    run_migrations(conn);
 
-    tauri::Builder::default()
-        .manage(state)
-        .invoke_handler(tauri::generate_handler![])
-        .run(tauri::generate_context!())
-        .expect("Error while running tauri application");
+    let event = NewEvent {
+        event_time: &0,
+        key_name: "A",
+    };
+
+    create_event(conn, event);
 }
