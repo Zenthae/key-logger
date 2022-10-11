@@ -3,27 +3,16 @@
     windows_subsystem = "windows"
 )]
 
-use db::run_migrations;
+use key_logger::listener;
 
-use crate::db::{models::NewEvent, query::create_event};
-
-// #[macro_use]
-// extern crate diesel;
-// extern crate diesel_migrations;
-
-mod db;
-mod listener;
+struct AppState {}
 
 fn main() {
-    let pool = db::get_connection_pool();
-    let conn = &mut pool.clone().get().unwrap();
+    let state = AppState {};
 
-    run_migrations(conn);
+    let database_connexion_pool = DatabaseConnexionPool::new();
 
-    let event = NewEvent {
-        event_time: &0,
-        key_name: "A",
-    };
+    let listener = Listener::new(database_connexion_pool.get());
 
-    create_event(conn, event);
+    // Start front end and call Listener::close(); on shutdown event
 }

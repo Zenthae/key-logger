@@ -16,6 +16,10 @@ impl Listener {
     fn stop() {}
 
     fn pause() {}
+
+    pub fn new() -> Listener {
+        Listener {}
+    }
 }
 
 pub fn start_listening(conn: &mut SqliteConnection) {
