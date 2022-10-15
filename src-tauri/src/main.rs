@@ -4,9 +4,12 @@
 )]
 #![allow(unused)]
 
+use std::sync::Mutex;
+
 use db::Database;
 use diesel::connection::SimpleConnection;
 use key_logger::KeyLogger;
+use tauri::{Manager, WindowEvent};
 
 mod db;
 mod key_logger;
@@ -33,10 +36,17 @@ struct AppState {}
 fn main() {
     let state = AppState {};
     // let db_connexion_pool = Database::new(None);
-    let mut logger = KeyLogger::new();
-    logger.start();
-    std::thread::sleep(std::time::Duration::from_secs(2));
-    logger.stop();
-    logger.handle.unwrap().join();
+    let mut logger = Mutex::new(KeyLogger::new());
+    logger.lock().unwrap().start();
+
+    tauri::Builder::default()
+        .on_window_event(move |event| {
+            if let WindowEvent::CloseRequested { api, .. } = event.event() {
+                logger.lock().unwrap().stop();
+                api.prevent_close();
+            }
+        })
+        .run(tauri::generate_context!())
+        .expect("Failed to start tauri app");
+    println!("closing");
 }
-// Move code in new() to start()

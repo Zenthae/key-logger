@@ -1,94 +1,86 @@
 use std::{
+    process,
     sync::{
-        mpsc::{channel, Receiver, Sender, TryRecvError},
-        Arc, Mutex,
+        atomic::{AtomicBool, Ordering},
+        Arc,
     },
     thread::{self, JoinHandle},
 };
 
-use rdev::{listen, Event, EventType};
+use rdev::{Event, EventType};
 
-#[derive()]
-enum State {
-    Start,
-    Stop,
-    Pause,
-    Resume,
-}
 pub struct KeyLogger {
-    tx: Sender<State>,
-    rx: Receiver<State>,
-    pub handle: Option<JoinHandle<()>>,
-    state: Arc<Mutex<State>>,
+    handle: Option<JoinHandle<()>>,
+    alive: Arc<AtomicBool>,
 }
 
 impl KeyLogger {
     pub fn new() -> KeyLogger {
-        let (tx, rx) = channel::<State>();
-        let state = Arc::new(Mutex::new(State::Stop));
-
         KeyLogger {
-            tx,
-            rx,
             handle: None,
-            state,
+            alive: Arc::new(AtomicBool::new(false)),
         }
     }
 
-    /// Do something when receive an event
-    fn log(event: Event) {
-        match event.event_type {
-            _ => println!("{:?}", event),
-            EventType::KeyPress(_) => todo!(),
-            EventType::KeyRelease(_) => todo!(),
-            EventType::ButtonPress(_) => todo!(),
-            EventType::ButtonRelease(_) => todo!(),
-            EventType::MouseMove { x, y } => todo!(),
-            EventType::Wheel { delta_x, delta_y } => todo!(),
-        };
+    pub fn start(&mut self) {
+        self.alive.store(true, Ordering::SeqCst);
+        let alive = self.alive.clone();
+
+        self.handle = Some(thread::spawn(move || {
+            rdev::listen(move |event: Event| {
+                println!("{:?}", event.event_type);
+                if !alive.load(Ordering::SeqCst) {
+                    // process::exit(0);
+                    panic!();
+                }
+
+                match event.event_type {
+                    _ => return,
+                    EventType::KeyPress(_) => todo!(),
+                    EventType::KeyRelease(_) => todo!(),
+                    EventType::ButtonPress(_) => todo!(),
+                    EventType::ButtonRelease(_) => todo!(),
+                    EventType::MouseMove { x, y } => todo!(),
+                    EventType::Wheel { delta_x, delta_y } => todo!(),
+                };
+            });
+        }));
     }
 
-    /// Start a logger
-    /// State::Start start logging keyboard events
-    /// State::pause stop logging keyboard events
-    /// State::resume resume logging events
-    /// State::Stop stop logging, listening, and close the thread
-    pub fn start(&mut self) {
-        let data = Arc::clone(&self.state);
+    pub fn stop(&mut self) {
+        println!("Stopping the logger");
+        self.alive.store(false, Ordering::SeqCst);
 
-        let handle = thread::spawn(move || {
-            if let Err(error) = listen(move |event: Event| {
-                match &self.rx.try_recv() {
-                    Ok(s) => {
-                        let mut data = data.lock().unwrap();
-                        *data = s;
-                    }
-                    Err(err) => {
-                        if let TryRecvError::Disconnected = err {
-                            panic!("Channel broke !")
-                        }
-                    }
-                };
-
-                match *data.lock().unwrap() {
-                    State::Start => Self::log(event),
-                    State::Stop => panic!(), // Ugly but only way of terminating the thread
-                    _ => return,
-                }
-            }) {
-                println!("Error: {:?}", error);
-            }
+        rdev::simulate(&EventType::Wheel {
+            delta_x: 0,
+            delta_y: 1,
         });
 
-        self.handle = Some(handle);
+        // self.handle
+        //     .take()
+        //     .expect("Called stop on non-running thread")
+        //     .join()
+        //     .expect("Could not join spawned thread");
+        println!("Logger stopped");
     }
 
-    /// Send a signal that stop and kill a logger
-    pub fn stop(&mut self) {}
+    /// deprecated
+    fn key_logger(&self) {
+        let alive = self.alive.clone();
 
-    /// Send a signal that pause the logger until a resume signal is send
-    pub fn pause(&mut self) {}
+        rdev::listen(move |event: Event| {
+            if !alive.load(Ordering::SeqCst) {
+                return;
+            }
 
-    /// Send a signal that resume a paused logger
-    pub fn resume(&mut self) {}
+            match event.event_type {
+                EventType::KeyPress(_) => todo!(),
+                EventType::KeyRelease(_) => todo!(),
+                EventType::ButtonPress(_) => todo!(),
+                EventType::ButtonRelease(_) => todo!(),
+                EventType::MouseMove { x, y } => todo!(),
+                EventType::Wheel { delta_x, delta_y } => todo!(),
+            };
+        });
+    }
 }
