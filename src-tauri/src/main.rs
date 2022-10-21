@@ -6,7 +6,7 @@
 
 use std::sync::{mpsc, Mutex};
 
-use db::Database;
+use db::{get_connection_pool, run_migration};
 use diesel::connection::SimpleConnection;
 use key_logger::KeyLogger;
 use pipeline::Pipeline;
@@ -21,27 +21,32 @@ struct AppState {}
 
 /// App Start :
 /// - Initialize app state
-/// - Initialize DB connexion pool
+/// - Initialize DB connection pool
 /// - Initialize Logger
-/// - Pass 1 DB connexion from the pool to the logger
+/// - Pass 1 DB connection from the pool to the logger
 /// - Start logging
 /// - Start GUI
 ///
 /// App Stop :
 /// - Stop GUI
 /// - Stop logging
-/// - Close all DB connexions
+/// - Close all DB connections
 /// - Drop logger
-/// - Drop DB connexion pool
+/// - Drop DB connection pool
 /// - Save app state ?
 /// - Drop app state
 /// - End of process
 fn main() {
     let state = AppState {};
-    let db_connexion_pool = Database::new(None, None);
+
+    let pool = get_connection_pool();
+
+    run_migration(&mut pool.get().unwrap());
+
+    let pool = pool.clone();
 
     let mut pipeline = Pipeline::new();
-    let tx = pipeline.open();
+    let tx = pipeline.open(&mut pool.get().unwrap());
 
     let mut logger = Mutex::new(KeyLogger::new(tx));
 

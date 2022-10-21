@@ -40,7 +40,7 @@ impl KeyLogger {
                     return;
                 }
 
-                tx.send(event).unwrap();
+                tx.send(event).expect("Failed to send the event.");
             }) {
                 println!("{:?}", error);
             };
@@ -49,7 +49,7 @@ impl KeyLogger {
 
     /// Set the listening mod to off
     pub fn stop(&mut self) {
-        println!("Stopping the logger");
+        println!("Stopping the logger.");
         self.alive.store(false, Ordering::SeqCst);
 
         // No join because rdev never exit
@@ -58,7 +58,7 @@ impl KeyLogger {
         //     .expect("Called stop on non-running thread")
         //     .join()
         //     .expect("Could not join spawned thread");
-        println!("Logger stopped");
+        println!("Logger stopped.");
     }
 
     /// Resume logging (alive = true)

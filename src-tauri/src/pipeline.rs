@@ -9,7 +9,12 @@ use std::{
     time::UNIX_EPOCH,
 };
 
-use rdev::Event;
+use crate::db::{models::NewEvent, query::insert_event};
+use diesel::{
+    r2d2::{ConnectionManager, PooledConnection},
+    SqliteConnection,
+};
+use rdev::{Event, EventType};
 
 /// Process event send by key_logger and save them into the database.
 pub struct Pipeline {
@@ -27,7 +32,10 @@ impl Pipeline {
 
     /// Create a new thread that filter and send data to the database
     /// Create a channel, pass the receiver to the thread and return the sender
-    pub fn open(&mut self) -> Sender<Event> {
+    pub fn open(
+        &mut self,
+        connection: &mut PooledConnection<ConnectionManager<SqliteConnection>>,
+    ) -> Sender<Event> {
         self.alive.store(true, Ordering::SeqCst);
 
         let alive = self.alive.clone();
@@ -35,11 +43,21 @@ impl Pipeline {
 
         self.handle = Some(thread::spawn(move || {
             for event in rx {
-                // Use chrono for time
-                let key = event.event_type;
-                let time: DateTime<Utc> = DateTime::from(event.time);
+                match event.event_type {
+                    EventType::KeyRelease(key) => {
+                        let key = serde_json::to_string(&key).unwrap();
+                        let time: DateTime<Utc> = DateTime::from(event.time);
 
-                println!("{:?}", time);
+                        insert_event(
+                            connection,
+                            NewEvent {
+                                key_name: &key,
+                                event_time: &time,
+                            },
+                        );
+                    }
+                    _ => continue,
+                }
             }
         }));
 
