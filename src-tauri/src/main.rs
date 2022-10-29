@@ -4,10 +4,14 @@
 )]
 #![allow(unused)]
 
-use std::sync::{mpsc, Mutex};
+use std::sync::{mpsc, Arc, Mutex};
 
 use db::{get_connection_pool, run_migration};
-use diesel::connection::SimpleConnection;
+use diesel::{
+    connection::SimpleConnection,
+    r2d2::{ConnectionManager, Pool},
+    SqliteConnection,
+};
 use key_logger::KeyLogger;
 use pipeline::Pipeline;
 use rdev::EventType;
@@ -17,7 +21,31 @@ mod db;
 mod key_logger;
 mod pipeline;
 
-struct AppState {}
+type DBPool = Pool<ConnectionManager<SqliteConnection>>;
+
+struct AppState {
+    database_connection_pool: Arc<Mutex<DBPool>>,
+}
+
+impl AppState {
+    pub fn new(pool: DBPool) -> AppState {
+        AppState {
+            database_connection_pool: Arc::new(Mutex::new(pool)),
+        }
+    }
+
+    pub fn get_db_connection(&self) -> &SqliteConnection {
+        let conn = *self
+            .database_connection_pool
+            .clone()
+            .lock()
+            .unwrap()
+            .get()
+            .unwrap();
+
+        &conn
+    }
+}
 
 /// App Start :
 /// - Initialize app state
@@ -37,16 +65,12 @@ struct AppState {}
 /// - Drop app state
 /// - End of process
 fn main() {
-    let state = AppState {};
+    let state = AppState::new(get_connection_pool());
 
-    let pool = get_connection_pool();
-
-    run_migration(&mut pool.get().unwrap());
-
-    let pool = pool.clone();
+    run_migration(&mut state.get_db_connection());
 
     let mut pipeline = Pipeline::new();
-    let tx = pipeline.open(&mut pool.get().unwrap());
+    let tx = pipeline.open(&mut state.get_db_connection());
 
     let mut logger = Mutex::new(KeyLogger::new(tx));
 

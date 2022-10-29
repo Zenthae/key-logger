@@ -32,10 +32,7 @@ impl Pipeline {
 
     /// Create a new thread that filter and send data to the database
     /// Create a channel, pass the receiver to the thread and return the sender
-    pub fn open(
-        &mut self,
-        connection: &mut PooledConnection<ConnectionManager<SqliteConnection>>,
-    ) -> Sender<Event> {
+    pub fn open(&mut self, connection: &mut SqliteConnection) -> Sender<Event> {
         self.alive.store(true, Ordering::SeqCst);
 
         let alive = self.alive.clone();
