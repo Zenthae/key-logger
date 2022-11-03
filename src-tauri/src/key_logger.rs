@@ -7,7 +7,7 @@ use std::{
     thread::{self, JoinHandle},
 };
 
-use rdev::{Event, EventType};
+use rdev::Event;
 
 /// Listen to every input event and send them to the processing pipeline
 pub struct KeyLogger {

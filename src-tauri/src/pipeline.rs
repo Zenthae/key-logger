@@ -9,7 +9,7 @@ use std::{
     time::UNIX_EPOCH,
 };
 
-use crate::db::{models::NewEvent, query::insert_event};
+use crate::db::models::NewEvent;
 use diesel::{
     r2d2::{ConnectionManager, PooledConnection},
     SqliteConnection,
@@ -32,11 +32,12 @@ impl Pipeline {
 
     /// Create a new thread that filter and send data to the database
     /// Create a channel, pass the receiver to the thread and return the sender
-    pub fn open(&mut self, connection: &mut SqliteConnection) -> Sender<Event> {
+    pub fn open(&mut self, connection: SqliteConnection) -> Sender<Event> {
         self.alive.store(true, Ordering::SeqCst);
 
         let alive = self.alive.clone();
         let (tx, rx) = mpsc::channel::<Event>();
+        let mut connection = connection;
 
         self.handle = Some(thread::spawn(move || {
             for event in rx {
@@ -45,13 +46,13 @@ impl Pipeline {
                         let key = serde_json::to_string(&key).unwrap();
                         let time: DateTime<Utc> = DateTime::from(event.time);
 
-                        insert_event(
-                            connection,
-                            NewEvent {
-                                key_name: &key,
-                                event_time: &time,
-                            },
-                        );
+                        // insert_event(
+                        //     &mut connection,
+                        //     NewEvent {
+                        //         key_name: &key,
+                        //         event_time: &time,
+                        //     },
+                        // );
                     }
                     _ => continue,
                 }

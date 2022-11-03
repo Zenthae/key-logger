@@ -1,41 +1,57 @@
 use diesel::{
     r2d2::{ConnectionManager, Pool, PooledConnection},
-    Connection, SqliteConnection,
+    SqliteConnection,
 };
 use diesel_migrations::{EmbeddedMigrations, MigrationHarness};
-use dotenv::dotenv;
 use std::env::var;
+
+use self::query::Query;
 
 pub mod models;
 pub mod query;
 mod schema;
 
-pub fn run_migration(connection: &mut SqliteConnection) {
-    const MIGRATIONS: EmbeddedMigrations = diesel_migrations::embed_migrations!();
+pub type DBPool = Pool<ConnectionManager<SqliteConnection>>;
+pub type PooledConn = PooledConnection<ConnectionManager<SqliteConnection>>;
 
-    connection.run_pending_migrations(MIGRATIONS).unwrap();
+pub struct Database {
+    pool: DBPool,
 }
 
-fn get_connection() -> SqliteConnection {
-    dotenv::dotenv().ok();
+impl Database {
+    pub fn new() -> Database {
+        dotenv::dotenv().ok();
 
-    let database_url =
-        var("DATABASE_URL").expect("Environnement variable DATABASE_URL must be set.");
+        let database_url =
+            var("DATABASE_URL").expect("Environnement variable DATABASE_URL must be set.");
 
-    SqliteConnection::establish(&database_url).expect("Failed to connect to the database")
-}
+        let manager = ConnectionManager::<SqliteConnection>::new(database_url);
 
-pub fn get_connection_pool() -> Pool<ConnectionManager<SqliteConnection>> {
-    dotenv::dotenv().ok();
+        let pool = Pool::builder()
+            .test_on_check_out(true)
+            .max_size(10)
+            .build(manager)
+            .expect("Failed to build the connection pool");
 
-    let database_url =
-        var("DATABASE_URL").expect("Environnement variable DATABASE_URL must be set.");
+        Database { pool }
+    }
 
-    let manager = ConnectionManager::<SqliteConnection>::new(database_url);
+    /// Must be run when the database schema get updated
+    pub fn run_migration(&self) {
+        const MIGRATIONS: EmbeddedMigrations = diesel_migrations::embed_migrations!();
 
-    Pool::builder()
-        .test_on_check_out(true)
-        .max_size(10)
-        .build(manager)
-        .expect("Failed to build the connection pool")
+        self.pool
+            .clone()
+            .get()
+            .unwrap()
+            .run_pending_migrations(MIGRATIONS)
+            .unwrap();
+    }
+
+    /// Allow access to the different queries.
+    /// Return a query object with a different connection
+    pub fn query(&self) -> Query {
+        let conn = self.pool.clone().get().unwrap();
+        Query::new(conn)
+    }
 }
