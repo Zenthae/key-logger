@@ -4,24 +4,30 @@
 )]
 #![allow(unused)]
 
-use chrono::prelude::*;
-use db::{models::NewEvent, Database};
+use db::Database;
+use key_logger::KeyLogger;
+use pipeline::Pipeline;
 
 mod command;
 mod db;
 mod key_logger;
 mod pipeline;
 
-pub struct AppState {}
+pub struct AppState {
+    database: Database,
+}
 
 fn main() {
-    let state = AppState {};
-
     let database = Database::new();
-    database.query().insert_event(NewEvent {
-        key_name: "A",
-        event_time: &DateTime::default(),
-    });
+    database.run_migration();
+
+    let mut pipeline = Pipeline::new();
+    let tx = pipeline.open(database.connection());
+
+    let mut logger = KeyLogger::new(tx);
+    logger.start();
+
+    let state = AppState { database };
 
     tauri::Builder::default()
         .manage(state)

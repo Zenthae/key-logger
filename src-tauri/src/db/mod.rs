@@ -9,7 +9,7 @@ use self::query::Query;
 
 pub mod models;
 pub mod query;
-mod schema;
+pub(crate) mod schema;
 
 pub type DBPool = Pool<ConnectionManager<SqliteConnection>>;
 pub type PooledConn = PooledConnection<ConnectionManager<SqliteConnection>>;
@@ -46,6 +46,10 @@ impl Database {
             .unwrap()
             .run_pending_migrations(MIGRATIONS)
             .unwrap();
+    }
+
+    pub fn connection(&self) -> PooledConn {
+        self.pool.clone().get().unwrap()
     }
 
     /// Allow access to the different queries.
