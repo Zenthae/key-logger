@@ -45,7 +45,7 @@ impl Pipeline {
                 match event.event_type {
                     EventType::KeyRelease(key) => {
                         use crate::db::schema::key_event::dsl::*;
-
+                        println!("{:?}", event);
                         let key = serde_json::to_string(&key).unwrap();
                         let time: DateTime<Utc> = DateTime::from(event.time);
                         // Deref PooledConnection

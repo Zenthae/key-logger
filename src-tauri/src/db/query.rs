@@ -1,4 +1,5 @@
 use super::{models::NewEvent, PooledConn};
+use chrono::{DateTime, Utc};
 use diesel::{insert_into, prelude::*};
 
 pub struct Query {
@@ -17,4 +18,7 @@ impl Query {
 
         insert_into(key_event).values(&event).execute(conn);
     }
+
+    /// Return the events recorded between the left and right DateTime.
+    pub fn events_between(left: DateTime<Utc>, right: DateTime<Utc>) {}
 }
