@@ -1,0 +1,7 @@
+{
+  "files.exclude": {
+    "target": true
+  },
+  "workspace.isHidden": true,
+  "task.allowAutomaticTasks": "off"
+}

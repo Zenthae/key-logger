@@ -1,0 +1,15 @@
+[workspace]
+members = [
+  "packages/shared",
+  "packages/client",
+  "packages/ui",
+  "packages/migration",
+]
+
+[workspace.dependencies]
+sea-orm = { version = "0.10.3", features = [
+  "sqlx-sqlite",
+  "runtime-async-std-rustls",
+  "macros",
+  "debug-print",
+] }

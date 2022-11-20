@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "command": "trunk serve ./packages/ui/index.html",
+      "group": "build",
+      "label": "ui: dev"
+    },
+    {
+      "type": "shell",
+      "command": "trunk build ./packages/ui/index.html",
+      "group": "build",
+      "label": "ui: build"
+    },
+    {
+      "type": "shell",
+      "command": "cargo tauri dev",
+      "group": "build",
+      "label": "tauri: dev"
+    },
+    {
+      "type": "shell",
+      "command": "cargo tauri build",
+      "group": "build",
+      "label": "tauri: build"
+    }
+  ]
+}
