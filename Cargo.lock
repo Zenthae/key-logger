@@ -3350,6 +3350,8 @@ name = "shared"
 version = "0.1.0"
 dependencies = [
  "dotenv",
+ "entity",
+ "migration",
  "rdev",
  "sea-orm",
 ]

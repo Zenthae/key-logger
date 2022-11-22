@@ -9,3 +9,5 @@ edition = "2021"
 sea-orm = { workspace = true }
 rdev = { version = "0.5.2", features = ["serialize"] }
 dotenv = "0.15.0"
+entity = { workspace = true }
+migration = { workspace = true }

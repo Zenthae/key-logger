@@ -1,11 +1,11 @@
 {
   "files.exclude": {
-    "target": true,
-    ".vscode": true,
-    "**/README.md": true,
-    "**/Cargo.toml": true,
-    "**/.*": true,
-    "**/dist": true
+    "target": false,
+    ".vscode": false,
+    "**/README.md": false,
+    "**/Cargo.toml": false,
+    "**/.*": false,
+    "**/dist": false
   },
   "search.exclude": {
     "**/node_modules": true,
@@ -16,6 +16,6 @@
     "**/Cargo.toml": false,
     "**/.*": false
   },
-  "workspace.isHidden": true,
+  "workspace.isHidden": false,
   "task.allowAutomaticTasks": "off"
 }

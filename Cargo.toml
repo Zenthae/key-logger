@@ -14,3 +14,6 @@ sea-orm = { version = "0.10.3", features = [
   "macros",
   "debug-print",
 ] }
+entity = { path = "packages/entity" }
+migration = { path = "packages/migration" }
+shared = { path = "packages/shared" }
