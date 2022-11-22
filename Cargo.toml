@@ -1,9 +1,10 @@
 [workspace]
 members = [
-  "packages/shared",
   "packages/client",
-  "packages/ui",
+  "packages/entity",
   "packages/migration",
+  "packages/shared",
+  "packages/ui",
 ]
 
 [workspace.dependencies]

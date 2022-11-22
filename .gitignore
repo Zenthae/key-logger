@@ -15,3 +15,6 @@ target/
 
 # UI Build
 dist/
+
+# Database
+data.db
