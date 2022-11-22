@@ -8,6 +8,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub key: String,
+    #[sea_orm(column_type = "Timestamp")]
     pub time: String,
 }
 
