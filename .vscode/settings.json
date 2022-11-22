@@ -1,6 +1,20 @@
 {
   "files.exclude": {
-    "target": true
+    "target": true,
+    ".vscode": true,
+    "**/README.md": true,
+    "**/Cargo.toml": true,
+    "**/.*": true,
+    "**/dist": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    ".vscode": false,
+    "**/README.md": false,
+    "**/Cargo.toml": false,
+    "**/.*": false
   },
   "workspace.isHidden": true,
   "task.allowAutomaticTasks": "off"

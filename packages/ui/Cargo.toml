@@ -7,4 +7,5 @@ edition = "2021"
 
 [dependencies]
 yew = "0.19.3"
-shared = { path = "../shared" }
+# shared = { path = "../shared" }
+# getrandom = { version = "0.2.8", features = ["js"] }
