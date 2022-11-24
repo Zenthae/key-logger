@@ -1,11 +1,14 @@
 {
   "files.exclude": {
-    "target": false,
-    ".vscode": false,
-    "**/README.md": false,
-    "**/Cargo.toml": false,
-    "**/.*": false,
-    "**/dist": false
+    "target": true,
+    ".vscode": true,
+    "**/README.md": true,
+    "**/Cargo.toml": true,
+    "**/.*": true,
+    "**/dist": true,
+    "packages\\ui\\node_modules": true,
+    "packages\\ui\\vite.config.ts": true,
+    "packages\\ui\\package.json": true
   },
   "search.exclude": {
     "**/node_modules": true,
@@ -16,6 +19,6 @@
     "**/Cargo.toml": false,
     "**/.*": false
   },
-  "workspace.isHidden": false,
+  "workspace.isHidden": true,
   "task.allowAutomaticTasks": "off"
 }

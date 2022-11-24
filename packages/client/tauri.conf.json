@@ -1,9 +1,10 @@
 {
   "build": {
-    "beforeBuildCommand": "trunk build ui/index.html",
-    "beforeDevCommand": "trunk serve ui/index.html",
-    "devPath": "http://127.0.0.1:8080/",
-    "distDir": "../ui/dist"
+    "beforeBuildCommand": "cd ui && pnpm build",
+    "beforeDevCommand": "cd ui && pnpm dev",
+    "devPath": "http:/localhost:5173/",
+    "distDir": "../ui/dist",
+    "withGlobalTauri": false
   },
   "package": {
     "productName": "Key Logger",
@@ -55,10 +56,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 900,
         "resizable": true,
         "title": "Key Logger",
-        "width": 800
+        "width": 1600
       }
     ]
   }

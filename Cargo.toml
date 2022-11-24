@@ -4,7 +4,6 @@ members = [
   "packages/entity",
   "packages/migration",
   "packages/shared",
-  "packages/ui",
 ]
 
 [workspace.dependencies]
@@ -17,3 +16,4 @@ sea-orm = { version = "0.10.3", features = [
 entity = { path = "packages/entity" }
 migration = { path = "packages/migration" }
 shared = { path = "packages/shared" }
+tokio = { version = "1.22.0", features = ["full"] }

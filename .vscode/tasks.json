@@ -3,13 +3,13 @@
   "tasks": [
     {
       "type": "shell",
-      "command": "trunk serve ./packages/ui/index.html",
+      "command": "cd packages/ui && pnpm dev",
       "group": "build",
       "label": "ui: dev"
     },
     {
       "type": "shell",
-      "command": "trunk build ./packages/ui/index.html",
+      "command": "cd packages/ui && pnpm build",
       "group": "build",
       "label": "ui: build"
     },
