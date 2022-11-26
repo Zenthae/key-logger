@@ -3,20 +3,36 @@
     windows_subsystem = "windows"
 )]
 
+use recorder::Recorder;
+use sea_orm::DatabaseConnection;
+
+mod command;
 mod database;
+mod error;
 mod logger;
 mod pipeline;
 mod recorder;
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+pub struct AppState {
+    database: DatabaseConnection,
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
+    let db = database::get_connection().await;
+    database::run_migrations(&db).await;
+
+    let mut recorder = Recorder::new();
+
+    recorder.init();
+
+    recorder.run();
+
+    let state = AppState { database: db };
+
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
+        .manage(state)
+        .invoke_handler(tauri::generate_handler![command::get_event_by_id])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

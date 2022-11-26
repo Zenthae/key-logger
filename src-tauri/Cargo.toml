@@ -27,6 +27,7 @@ tokio = { version = "1.22.0", features = ["full"] }
 rdev = { version = "0.5.2", features = ["serialize"] }
 dotenv = "0.15.0"
 migration = { path = "migration" }
+entity = { path = "entity" }
 
 [features]
 # by default Tauri runs in production mode
@@ -37,4 +38,4 @@ default = ["custom-protocol"]
 custom-protocol = ["tauri/custom-protocol"]
 
 [workspace]
-members = [".", "migration"]
+members = [".", "migration", "entity"]

@@ -1112,6 +1112,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "entity"
+version = "0.1.0"
+dependencies = [
+ "sea-orm",
+ "serde",
+]
+
+[[package]]
 name = "event-listener"
 version = "2.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1923,6 +1931,7 @@ name = "key-logger"
 version = "0.0.0"
 dependencies = [
  "dotenv",
+ "entity",
  "migration",
  "rdev",
  "sea-orm",

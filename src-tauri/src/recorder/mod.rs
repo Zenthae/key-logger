@@ -38,12 +38,20 @@ impl Recorder {
         }))
     }
 
+    /// Start or resume an initialized recorder.
     pub fn run(&mut self) {
-        self._alive.store(true, Ordering::SeqCst);
+        match self._handle {
+            Some(_) => self._alive.store(true, Ordering::SeqCst),
+            None => panic!("Can't start an uninitialized recorder"),
+        };
     }
 
+    /// Stop an initialized recorder.
     pub fn stop(&mut self) {
-        self._alive.store(false, Ordering::SeqCst);
+        match self._handle {
+            Some(_) => self._alive.store(false, Ordering::SeqCst),
+            None => panic!("Can't stop an uninitialized recorder"),
+        };
     }
 }
 
