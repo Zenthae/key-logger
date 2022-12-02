@@ -57,9 +57,6 @@ impl Recorder {
 
 impl Default for Recorder {
     fn default() -> Self {
-        Self {
-            _handle: None,
-            _alive: Arc::new(AtomicBool::new(false)),
-        }
+        Recorder::new()
     }
 }

@@ -31,6 +31,13 @@ async fn main() {
 
     recorder.lock().unwrap().run();
 
+    // let db1 = db.clone();
+
+    // async move {
+    //     database::query::event::get_by_id(&db1, 1).await;
+    // }
+    // .await;
+
     let state = AppState { database: db };
 
     tauri::Builder::default()

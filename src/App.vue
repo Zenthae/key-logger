@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import { invoke } from "@tauri-apps/api";
-
-function test() {
-  invoke("get_event_by_id").then((r) => console.log(r));
-}
+import "@master/css";
 </script>
 
 <template>
   <div>
-    <button @click="test"></button>
+    <h1 class="font:40 color:rgb(119,71,72) text-align:center">Hello</h1>
   </div>
 </template>
 

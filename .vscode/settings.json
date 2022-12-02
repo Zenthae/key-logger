@@ -1,23 +1,23 @@
 {
   "files.exclude": {
-    "dist": false,
-    "node_modules": false,
-    "src-tauri\\icons": false,
-    "src-tauri\\target": false,
-    ".vscode": false,
-    "public": false,
-    ".gitignore": false,
-    "index.html": false,
-    "package.json": false,
-    "README.md": false,
-    "vite.config.ts": false,
-    "src-tauri\\.gitignore": false,
-    "src-tauri\\build.rs": false,
-    "src-tauri\\Cargo.toml": false,
-    "src-tauri\\tauri.conf.json": false,
-    "src-tauri\\.env": false,
-    "src-tauri\\migration\\Cargo.toml": false,
-    "src-tauri\\entity\\Cargo.toml": false
+    "dist": true,
+    "node_modules": true,
+    "src-tauri\\icons": true,
+    "src-tauri\\target": true,
+    ".vscode": true,
+    "public": true,
+    ".gitignore": true,
+    "index.html": true,
+    "package.json": true,
+    "README.md": true,
+    "vite.config.ts": true,
+    "src-tauri\\.gitignore": true,
+    "src-tauri\\build.rs": true,
+    "src-tauri\\Cargo.toml": true,
+    "src-tauri\\tauri.conf.json": true,
+    "src-tauri\\.env": true,
+    "src-tauri\\migration\\Cargo.toml": true,
+    "src-tauri\\entity\\Cargo.toml": true
   },
-  "workspace.isHidden": false
+  "workspace.isHidden": true
 }
