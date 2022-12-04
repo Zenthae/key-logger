@@ -5,6 +5,7 @@
 
 use std::sync::{Arc, Mutex};
 
+use pipeline::Pipeline;
 use recorder::Recorder;
 use sea_orm::DatabaseConnection;
 use tauri::WindowEvent;
@@ -26,17 +27,16 @@ async fn main() {
     database::run_migrations(&db).await;
 
     let recorder = Arc::new(Mutex::new(Recorder::new()));
+    let receiver = recorder.lock().unwrap().init();
 
-    recorder.lock().unwrap().init();
+    let pipeline = Arc::new(Mutex::new(Pipeline::new(receiver)));
 
+    let db1 = db.clone();
+
+    pipeline.lock().unwrap().init(db1);
+
+    pipeline.lock().unwrap().run();
     recorder.lock().unwrap().run();
-
-    // let db1 = db.clone();
-
-    // async move {
-    //     database::query::event::get_by_id(&db1, 1).await;
-    // }
-    // .await;
 
     let state = AppState { database: db };
 
@@ -53,6 +53,7 @@ async fn main() {
 
             if let WindowEvent::CloseRequested { .. } = event.event() {
                 recorder.lock().unwrap().stop();
+                pipeline.lock().unwrap().stop();
             }
         })
         .invoke_handler(tauri::generate_handler![command::get_event_by_id])
