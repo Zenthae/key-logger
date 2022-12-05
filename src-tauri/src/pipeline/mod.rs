@@ -7,7 +7,6 @@ use std::{
         mpsc::Receiver,
         Arc,
     },
-    // thread::{self, JoinHandle},
 };
 use tokio::task::{self, JoinHandle};
 
@@ -32,6 +31,10 @@ impl Pipeline {
         let alive = self._alive.clone();
 
         self._handle = Some(task::spawn(async move {
+            if !alive.load(Ordering::SeqCst) {
+                return;
+            }
+
             database::query::event::get_by_id(&conn, 1).await;
         }));
     }

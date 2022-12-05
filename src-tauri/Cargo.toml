@@ -28,6 +28,7 @@ rdev = { version = "0.5.2", features = ["serialize"] }
 dotenv = "0.15.0"
 migration = { path = "migration" }
 entity = { path = "entity" }
+futures = "0.3.25"
 
 [features]
 # by default Tauri runs in production mode
