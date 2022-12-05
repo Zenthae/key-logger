@@ -1,7 +1,8 @@
 use std::{
     sync::{
         atomic::{AtomicBool, Ordering},
-        mpsc, Arc,
+        mpsc::{self, Sender},
+        Arc,
     },
     thread::{self, JoinHandle},
 };
@@ -23,9 +24,8 @@ impl Recorder {
 
     /// Create a thread that listen to input events end
     /// Return the receiving side of the communication channel.
-    pub fn init(&mut self) -> mpsc::Receiver<Event> {
+    pub fn init(&mut self, tx: Sender<Event>) {
         let alive = self._alive.clone();
-        let (tx, rx) = mpsc::channel::<Event>();
 
         self._handle = Some(thread::spawn(move || {
             if let Err(_error) = rdev::listen(move |event: Event| {
@@ -40,8 +40,6 @@ impl Recorder {
                 todo!("Log error")
             }
         }));
-
-        rx
     }
 
     /// Start or resume an initialized recorder.

@@ -26,14 +26,12 @@ async fn main() {
     let db = database::get_connection().await;
     database::run_migrations(&db).await;
 
+    let pipeline = Arc::new(Mutex::new(Pipeline::new()));
+
+    let tx = pipeline.lock().unwrap().init(db.clone());
+
     let recorder = Arc::new(Mutex::new(Recorder::new()));
-    let receiver = recorder.lock().unwrap().init();
-
-    let pipeline = Arc::new(Mutex::new(Pipeline::new(receiver)));
-
-    let db1 = db.clone();
-
-    pipeline.lock().unwrap().init(db1);
+    recorder.lock().unwrap().init(tx);
 
     pipeline.lock().unwrap().run();
     recorder.lock().unwrap().run();
