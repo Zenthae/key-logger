@@ -5,6 +5,7 @@
 
 use std::sync::{Arc, Mutex};
 
+use error::Result;
 use pipeline::Pipeline;
 use recorder::Recorder;
 use sea_orm::DatabaseConnection;
@@ -22,7 +23,7 @@ pub struct AppState {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<()> {
     let db = database::get_connection().await;
     database::run_migrations(&db).await;
 
@@ -57,4 +58,6 @@ async fn main() {
         .invoke_handler(tauri::generate_handler![command::get_event_by_id])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+
+    Ok(())
 }

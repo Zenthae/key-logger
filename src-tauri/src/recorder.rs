@@ -9,6 +9,8 @@ use std::{
 
 use rdev::Event;
 
+use crate::error;
+
 pub struct Recorder {
     _handle: Option<JoinHandle<()>>,
     _alive: Arc<AtomicBool>,
@@ -24,7 +26,7 @@ impl Recorder {
 
     /// Create a thread that listen to input events end
     /// Return the receiving side of the communication channel.
-    pub fn init(&mut self, tx: Sender<Event>) {
+    pub fn init(&mut self, tx: Sender<Event>) -> error::Result<()> {
         let alive = self._alive.clone();
 
         self._handle = Some(thread::spawn(move || {
@@ -40,6 +42,8 @@ impl Recorder {
                 todo!("Log error")
             }
         }));
+
+        Ok(())
     }
 
     /// Start or resume an initialized recorder.
